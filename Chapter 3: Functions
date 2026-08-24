@@ -1,0 +1,438 @@
+# Chapter 3 Exercises
+
+## [A] State True or False
+
+* **(a)** If a function is defined before calling it, there is no need to mention its prototype.
+  * **Answer:** False
+* **(b)** Two functions can be overloaded if their arguments are similar but their return values are different.
+  * **Answer:** False
+* **(c)** Two functions can be overloaded only if their arguments differ in number, order, type.
+  * **Answer:** True
+* **(d)** If default values are mentioned for the four arguments in the functions prototype, we can call this function and pass it the first and fourth argument.
+  * **Answer:** False
+* **(e)** A function can be overloaded any number of times.
+  * **Answer:** True
+* **(f)** The assignment operator cannot be overloaded.
+  * **Answer:** False
+* **(g)** When we define the function to be inline there is no guarantee that its code would get inserted at the place where the call is being made.
+  * **Answer:** True
+* **(h)** The side effects of the macro definition get eliminated if we use inline functions.
+  * **Answer:** True
+
+---
+
+## [B] Point out the errors, if any, in the following programs
+
+### (a)
+```cpp
+void main()
+{
+ int a=30;
+ f();
+}
+void f()
+{
+ int b=20;
+}
+```
+
+**Answer:**
+```cpp
+void f(); //forward declaration of function is required if prototype is not defined in scope before function call
+void main()
+{
+ int a=30;
+ f();
+}
+void f()
+{
+ int b=20;
+}
+```
+
+### (b)
+```cpp
+#include <iostream.h>
+void f()
+{
+ cout << "Hello";
+}
+void main()
+{
+ f();
+}
+```
+
+**Answer:**
+```cpp
+#include <iostream> // in modern C++ compilers <iostream.h> has been deprecated
+using namespace std; /*Elements of the standard library like cout live inside the std namespace. 
+ Using cout globally, causes an "undeclared identifier" compiler error.*/
+void f() 
+{ 
+ cout << "Hello"; 
+} 
+int main() //C++ standard mandates main must return int
+{ 
+ f(); 
+}
+```
+
+### (c)
+```cpp
+int f(int, int);
+int f(int, int);
+void main()
+{
+ int a;
+ a=f(10,30);
+ cout << a;
+}
+void f(int x, int y)
+{
+ return x+y;
+}
+```
+
+**Answer:**
+```cpp
+#include <iostream> // in modern C++ compilers <iostream.h> has been deprecated
+using namespace std; /*Elements of the standard library like cout live inside the std namespace. 
+ Using cout globally, causes an "undeclared identifier" compiler error.*/
+int f(int, int);
+int f(int, int);
+int main()
+{
+ int a;
+ a=f(10,30);
+ cout << a;
+}
+void f(int x, int y) //new declaration of f() as void is ambiguating; also since function returns int value, return type must be int
+{
+ return x+y;
+}
+```
+
+### (d)
+```cpp
+#include <iostream.h>
+void main()
+{
+ void fun1(void);
+ void fun2(void);
+ fun1();
+}
+void fun1(void)
+{
+ fun2();
+ cout << endl << "Hi......Hello";
+}
+void fun2(void)
+{
+ cout << endl << "to you";
+}
+```
+
+**Answer:**
+```cpp
+#include <iostream> // in modern C++ compilers <iostream.h> has been deprecated
+using namespace std; /*Elements of the standard library like cout live inside the std namespace. 
+ Using cout globally, causes an "undeclared identifier" compiler error.*/
+void fun1(void);
+void fun2(void);
+int main() //C++ standard mandates, main must return int
+{
+ fun1();
+}
+void fun1(void)
+{
+ fun2(); // if forward declaration is inside main scope it will not be declared for fun2() scope
+ cout << endl << "Hi......Hello";
+}
+void fun2(void)
+{
+ cout << endl << "to you";
+}
+```
+
+### (e)
+```cpp
+#include <iostream.h>
+void f(int, float);
+void main()
+{
+ f();
+}
+void f(int i=10,float a =3.14)
+{
+ cout << i <<a;
+}
+```
+
+**Answer:**
+```cpp
+#include <iostream> // in modern C++ compilers <iostream.h> has been deprecated
+using namespace std; /*Elements of the standard library like cout live inside the std namespace. 
+ Using cout globally, causes an "undeclared identifier" compiler error.*/
+void f(int, float);
+void f(int i=10,float a =3.14)
+{
+ cout << i <<a;
+}
+int main()
+{
+ f(); //if function is called with no parameters after forward declaration, there are no default parameters set and hence it encounters a compiler error
+}
+```
+
+### (f)
+```cpp
+#include <iostream.h>
+void f(int=10,int=20,int=30);
+void f(int, int);
+void main()
+{
+ f(1,2);
+}
+void f(int x,int y, int z)
+{
+ cout << endl << x << endl << y << endl << z;
+}
+void f(int x,int y)
+{
+ cout << endl << x << endl << y;
+}
+```
+
+**Answer:**
+```cpp
+#include <iostream> // in modern C++ compilers <iostream.h> has been deprecated
+using namespace std; /*Elements of the standard library like cout live inside the std namespace. 
+ Using cout globally, causes an "undeclared identifier" compiler error.*/
+void f(int,int,int); // hence simple forward declaration ensures the compiler knows the diiference between f() is via number of parameters.
+void f(int, int);
+int main()
+{
+ f(1,2); //call of overloaded ‘f(int, int)’ was ambiguous since f(int, int, int) had default values and was overloaded with f(int, int)
+}
+void f(int x =10,int y=20, int z=30)
+{
+ cout << endl << x << endl << y << endl << z;
+}
+void f(int x,int y)
+{
+ cout << endl << x << endl << y;
+}
+```
+
+---
+
+## [C] Answer the following
+
+### (a) Write a program which calls a function `cls()`. This function should be capable of clearing any part of the screen. If the function is called without any arguments then it should clear the screen.
+
+**Answer:**
+```cpp
+#include <iostream>
+#include <string>
+
+// Global constants for terminal dimensions
+const int SCREEN_WIDTH = 80;
+const int SCREEN_HEIGHT = 40;
+
+/**
+ * Clears the entire screen by printing multiple newlines.
+ * Overloaded version with no arguments.
+ */
+void cls() {
+ // Print enough newlines to push existing text out of view
+ for (int i = 0; i < SCREEN_HEIGHT; ++i) {
+ std::cout << "\n";
+ }
+ std::cout << std::flush;
+}
+
+/**
+ * Clears a specific rectangular region of the screen using spaces.
+ * @param x The starting column (0-indexed from left)
+ * @param y The starting row (0-indexed from top)
+ * @param width The number of columns to clear
+ * @param height The number of rows to clear
+ */
+void cls(int x, int y, int width, int height) {
+ std::string spaces(width, ' ');
+ // Loop through each row of the target area
+ for (int row = 0; row < height; ++row) {
+ // Move the cursor to the target row and column using ANSI escape codes
+ std::cout << (y + row + 1) << ";" << (x + 1) << "H";
+ // Overwrite the text in that row with spaces
+ std::cout << spaces;
+ }
+ std::cout << std::flush;
+}
+
+int main() {
+ // 1. Fill the screen with test pattern text
+ cls();
+ for (int i = 0; i < 20; ++i) {
+ std::cout << "Line " << (i < 10 ? "0" : "") << i 
+ << ": OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n";
+ }
+ std::cout << "\nPress Enter to clear a specific box (X:10, Y:3, W:20, H:5) using spaces...";
+ std::cin.get();
+ 
+ // 2. Clear a specific section (Column 10, Row 3, Width 20, Height 5)
+ cls(10, 3, 20, 5);
+ std::cout << "Press Enter to clear the entire screen using newlines...";
+ std::cin.get();
+ 
+ // 3. Clear the whole screen using the newline method
+ cls();
+ std::cout << "Screen cleared using newlines!\n";
+ return 0;
+}
+```
+
+### (b) Write a program which contains a `writestring()` function which displays a string at a given row and column on a given VDU page, in a given color. If the page number and the color are not passed, the page number zero and color number 7 should be used.
+
+**Answer:**
+```cpp
+#include <iostream>
+#include <string>
+
+void writestring(int row, int col, int page = 0, int color = 7) {
+ 
+ std::cout << "[--- VDU SCREEN PAGE " << page << " ---]\n";
+ 
+ // move to the correct Row by printing blank lines
+ for (int i = 0; i < row; i++) {
+ std::cout << "\n";
+ }
+ 
+ // Move right to the correct Column by printing empty spaces
+ for (int j = 0; j < col; j++) {
+ std::cout << " ";
+ }
+ 
+ // Map the requested color number (0-7) to a standard text style
+ switch(color) {
+ case 1: std::cout << "\033[34m"; break; // Blue
+ case 2: std::cout << "\033[32m"; break; // Green
+ case 3: std::cout << "\033[36m"; break; // Cyan
+ case 4: std::cout << "\033[31m"; break; // Red
+ case 5: std::cout << "\033[35m"; break; // Magenta
+ case 6: std::cout << "\033[33m"; break; // Yellow
+ case 7: std::cout << "\033[37m"; break; // White (Default)
+ default: std::cout << "\033[0m"; break; // Reset style
+ }
+ 
+ // Print the text and reset the color immediately back to normal
+ std::cout << str << "\033[0m\n\n";
+}
+
+int main() {
+ writestring( 2, 5, 0, 2);
+ writestring(1, 12);
+ return 0;
+}
+```
+
+### (c) Suppose there is a function with the following prototype: `void f(int=10,int=20,int=30,int=40)`. If this function is called by passing two arguments, how can we make sure that these arguments are treated as first and third, whereas second and fourth are taken as default.
+
+**Answer:**
+```cpp
+#include <iostream>
+void f(int=10,int=20,int=30,int=40);
+
+int main() {
+ f(2, NULL, 4);
+}
+
+void f(int a, int b, int c, int d)
+{
+ if (b == NULL)
+ {
+  b = 20;
+ }
+ 
+ std::cout << "a = " << a << ",b = " << b << ",c = " << c << ",d = " << d;
+}
+```
+
+### (d) Write overloaded functions to convert an `int` to an ascii string and to convert a `float` to an ascii string.
+
+**Answer:**
+```cpp
+#include <iostream>
+
+char ascii(int num)
+{
+ char ch = char(num);
+ return ch;
+}
+
+char ascii(float num)
+{
+ char ch = char(int(num));
+ return ch;
+}
+
+int main() {
+ int val1;
+ float val2;
+ std::cout << endl << "Enter values to convert: ";
+ std::cin >> val1 >> val2;
+ std::cout << endl << "Final result is: " << ascii(val1) << " " << ascii(val2);
+}
+```
+## (e) Write overloaded functions to convert an ascii string to an int and to convert an ascii string to a float.
+Answer:
+```cpp
+#include 
+int ascii(char ch, int parameter)
+{
+parameter = int(ch);
+return parameter;
+}
+float ascii(char ch, float parameter)
+{
+parameter = float(int(ch));
+return parameter;
+}
+int main() {
+char val;
+std::cout << endl << "Enter values to convert: ";
+std::cin >> val;
+printf("Final result is: %d %.2f", ascii(val, 0), ascii(val, 0.0f));
+}
+```
+## (f) Write the prototypes for the following:
+
+* A function which receives an int and a float and returns a double
+* Answer: double f(int, float);
+* A function that receives an int pointer and a float reference and returns an int pointer
+* Answer: int *f(int *, float &);
+* A function which doesn't receive anything and doesn't return anything
+* Answer: void f(void);
+* A function that receives an array of ints and a float reference and doesn't return anything.
+* Answer: void f(int [], float &);
+
+## (g) Which operators cannot be overloaded?
+Answer: In C++, the five core language operators that cannot be overloaded are:
+
+* The member access operator (.)
+* The pointer-to-member operator (.*)
+* The scope resolution operator (::)
+* The ternary conditional operator (?:)
+* The size-of operator (sizeof)
+
+## (h) Can we change the hierarchy of operators by overloading them?
+Answer: No, the hierarchy of operators cannot be changed as that is native to every compiler. In spite of overloading an operator, its default precedence and hierarchy will remain the same.
+Hence, if:
+
+* Case 1: a + b * (c - d)
+* Case 2: complex c = a + b * d
+
+In Case 1, the brackets take precedence over *, and * takes precedence over +.
+In Case 2 as well, * takes precedence over + even though the operators have been overloaded and redefined for a custom complex structure.
+
