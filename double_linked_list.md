@@ -150,5 +150,4 @@ int main() {
     return 0;
 }
 ```
-
-
+![My Code Output](double_list.png)
