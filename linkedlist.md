@@ -1,3 +1,8 @@
+## Linked list
+
+Application of linked list via class and concept of inheritance in C++
+
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -136,3 +141,5 @@ int main() {
     delete list;
     return 0;
 }
+```
+![My Code Output](linkedlist.png)
